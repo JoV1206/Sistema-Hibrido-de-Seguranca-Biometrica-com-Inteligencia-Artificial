@@ -7,6 +7,9 @@ logs/
 data/faces/
 dashboard/data/faces/
 
+# Dataset de validação (pesado — baixar do Kaggle iBeta Level 1)
+DATASET_DAWNLOAD/
+
 # Bibliotecas e Ambientes Virtuais
 node_modules/
 dashboard/node_modules/
