@@ -19,25 +19,14 @@ async function loadLogs() {
 
 // Filtros Blindados contra Logs Antigos Corrompidos
 function applyFilters() {
-    const filterDate = document.getElementById('filter-date').value; 
+    const filterDate = document.getElementById('filter-date').value;
     const filterStatus = document.getElementById('filter-status').value;
-    const filterLocation = document.getElementById('filter-location').value.toLowerCase().trim();
 
     const logsFiltrados = todosOsLogsEmMemoria.filter(log => {
         // 1. Regra de Status
         if (filterStatus !== 'ALL' && log.status !== filterStatus) return false;
 
-        // 2. Regra de Localização (Protegido contra logs sem IP ou Cidade)
-        if (filterLocation !== '') {
-            const cidade = (log.cidade || '').toLowerCase();
-            const ip = (log.ip_publico || '').toLowerCase();
-            const rede = (log.rede_wifi || '').toLowerCase();
-            const locString = `${cidade} ${ip} ${rede}`;
-            
-            if (!locString.includes(filterLocation)) return false;
-        }
-
-        // 3. Regra de Data (Converte de YYYY-MM-DD para DD/MM/YYYY)
+        // 2. Regra de Data (Converte de YYYY-MM-DD para DD/MM/YYYY)
         if (filterDate !== '') {
             const partes = filterDate.split('-'); 
             if (partes.length === 3) {
@@ -90,9 +79,7 @@ function renderizarCartoes(logs) {
                 <p><strong>Usuário:</strong> <span style="color:var(--accent); font-weight:bold;">${log.usuario_identificado || 'Desconhecido'}</span></p>
                 <p><strong>Motivo:</strong> ${log.motivo || 'N/A'}</p>
                 ${vetorTag}
-                <hr style="border: 0; border-top: 1px solid var(--border); margin: 8px 0;">
-                <p><strong>Local:</strong> ${log.cidade || 'N/A'} (${log.ip_publico || 'N/A'})</p>
-                
+
                 <div style="margin-top: 15px; display: flex; gap: 5px;">
                     <button class="primary-btn btn-identify" data-file="${jsonFilename}" style="flex:1; padding: 5px; font-size:0.8rem;">Identificar</button>
                     <button class="danger-btn btn-delete" data-file="${jsonFilename}" style="flex:1; padding: 5px; font-size:0.8rem;">Excluir</button>
@@ -118,14 +105,10 @@ document.getElementById('filter-date')?.addEventListener('input', () => {
 document.getElementById('filter-status')?.addEventListener('change', () => {
     try { applyFilters(); } catch (e) { console.error(e); }
 });
-document.getElementById('filter-location')?.addEventListener('input', () => {
-    try { applyFilters(); } catch (e) { console.error(e); }
-});
 
 document.getElementById('btn-clear-filters')?.addEventListener('click', () => {
     document.getElementById('filter-date').value = '';
     document.getElementById('filter-status').value = 'ALL';
-    document.getElementById('filter-location').value = '';
     try { applyFilters(); } catch (e) { console.error(e); }
 });
 

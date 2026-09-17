@@ -18,8 +18,6 @@ import face_recognition
 from src.camera import Camera
 from src.recognizer import FaceRecognizer
 
-import requests
-import subprocess
 from datetime import datetime
 import json
 
@@ -120,68 +118,43 @@ class AntiSpoofingDetector:
             return False, 0
 
 # =======================================================================
-# MÓDULO DE AUDITORIA E TELEMETRIA (STEALTH LOGGER)
+# MÓDULO DE AUDITORIA LOCAL (REGISTRO MÍNIMO)
 # =======================================================================
 class AuditLogger:
     """
-    Ferramenta de resposta a incidentes forenses. Captura dados do invasor no momento
-    de um falso positivo evitado (bloqueio de spoofing). Opera de forma furtiva para 
-    armazenar localmente um dossiê JSON com IP, SSID, e vetor facial da tentativa.
+    Registro local de eventos de autenticação para análise. Aplicando o princípio
+    da minimização (LGPD), grava apenas o mínimo necessário no próprio dispositivo:
+    status, timestamp, motivo, nome sanitizado, a foto da tentativa e o vetor
+    biométrico. NÃO coleta telemetria de rede nem geolocalização (SSID, IP público,
+    cidade ou coordenadas) — essa coleta foi removida por ser desnecessária ao
+    propósito de autenticação.
     """
     def __init__(self, log_dir="logs"):
         self.log_dir = log_dir
-        # Cria a pasta secreta de logs se ela não existir
+        # Cria a pasta de logs local se ela não existir
         if not os.path.exists(self.log_dir):
             os.makedirs(self.log_dir)
-
-    def get_wifi_ssid(self):
-        """Usa comandos nativos do Windows para descobrir o Wi-Fi atual."""
-        try:
-            output = subprocess.check_output(['netsh', 'wlan', 'show', 'interfaces']).decode('utf-8', errors='ignore')
-            for line in output.split('\n'):
-                if "SSID" in line and "BSSID" not in line:
-                    return line.split(':')[1].strip()
-        except Exception:
-            pass
-        return "Desconhecido/Cabeado"
-
-    def get_location(self):
-        """Faz um ping rápido e invisível para pegar o IP e a Localização."""
-        try:
-            # Timeout de 2 segundos para não travar o login do Windows
-            res = requests.get('https://ipinfo.io/json', timeout=2).json()
-            return res.get('ip', 'N/A'), res.get('city', 'N/A'), res.get('loc', 'N/A')
-        except Exception:
-            return "Offline", "N/A", "N/A"
 
     def registrar_evento(self, frame, status, motivo, usuario="Desconhecido", vetor_facial=None):
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         nome_base = f"{timestamp}_{status}"
 
-        # 1. Salva a foto silenciosamente
+        # 1. Salva a foto da tentativa (mantida localmente)
         caminho_foto = os.path.join(self.log_dir, f"{nome_base}.jpg")
         if frame is not None:
             cv2.imwrite(caminho_foto, frame)
 
-        # 2. Coleta a Telemetria
-        ssid = self.get_wifi_ssid()
-        ip, cidade, coords = self.get_location()
-
-        # 3. Monta o Dossiê
+        # 2. Monta o registro mínimo (sem telemetria de rede/geolocalização)
         dossie = {
             "data_hora": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             "status": status,
             "motivo": motivo,
             "usuario_identificado": usuario,
-            "rede_wifi": ssid,
-            "ip_publico": ip,
-            "cidade": cidade,
-            "coordenadas_gps": coords,
             "foto_arquivo": f"{nome_base}.jpg",
-            "vetor_facial": vetor_facial # NOVO CAMPO
+            "vetor_facial": vetor_facial
         }
 
-        # 4. Salva o JSON no disco
+        # 3. Salva o JSON no disco (local)
         caminho_json = os.path.join(self.log_dir, f"{nome_base}.json")
         with open(caminho_json, 'w', encoding='utf-8') as f:
             json.dump(dossie, f, indent=4, ensure_ascii=False)

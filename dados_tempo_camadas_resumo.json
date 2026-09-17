@@ -1,0 +1,60 @@
+{
+  "gerado_em": "2026-09-16 10:44:32",
+  "ambiente": {
+    "cpu": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+    "opencv": "4.13.0",
+    "opencv_threads": 16,
+    "python": "3.11.9",
+    "inferencia": "CPU (DNN_TARGET_CPU)"
+  },
+  "protocolo": {
+    "dataset": "iBeta Level 1 (amostras publicas)",
+    "videos": 13,
+    "frames_por_video": 15,
+    "frames_processados": 195,
+    "frames_com_um_rosto": 193,
+    "warmup_descartado_por_camada": 5,
+    "resolucoes_frame": [
+      "720x1280"
+    ]
+  },
+  "tempos_por_camada_ms": {
+    "deteccao_hog": {
+      "n": 190,
+      "media_ms": 835.983,
+      "desvio_ms": 120.538,
+      "mediana_ms": 793.267,
+      "min_ms": 678.517,
+      "max_ms": 1277.929,
+      "p95_ms": 1042.301
+    },
+    "identidade_embedding": {
+      "n": 188,
+      "media_ms": 507.555,
+      "desvio_ms": 79.935,
+      "mediana_ms": 478.078,
+      "min_ms": 400.78,
+      "max_ms": 728.542,
+      "p95_ms": 657.146
+    },
+    "textura_onnx": {
+      "n": 188,
+      "media_ms": 2.82,
+      "desvio_ms": 0.786,
+      "mediana_ms": 2.448,
+      "min_ms": 2.279,
+      "max_ms": 5.714,
+      "p95_ms": 4.819
+    },
+    "vivacidade_landmarks_ear": {
+      "n": 188,
+      "media_ms": 3.552,
+      "desvio_ms": 0.584,
+      "mediana_ms": 3.365,
+      "min_ms": 3.16,
+      "max_ms": 7.103,
+      "p95_ms": 4.566
+    }
+  },
+  "tempo_total_por_frame_ms_estimado": 1349.91
+}
