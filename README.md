@@ -1,5 +1,6 @@
 # Uma Arquitetura Híbrida de Autenticação Biométrica com Detecção de Vivacidade Multicamadas e Integração ao Sistema Operacional Windows
 
+
 Este artefato apresenta a implementação de um sistema avançado de autenticação para ambientes Windows, proposto no artigo correspondente. O objetivo é demonstrar uma arquitetura híbrida e segura que combina Visão Computacional (para reconhecimento facial e *Liveness Detection* com a rede MiniFASNetV2 via ONNX) operando em um backend Python, um Dashboard Administrativo em Node.js/Electron para gestão de credenciais e auditoria forense, e um *Credential Provider* em C++ para injeção nativa de credenciais no Sistema Operacional. A comunicação entre os módulos isolados ocorre exclusivamente via *Named Pipes* (IPC), mitigando vetores de ataque em rede.
 
 # Estrutura do readme.md
